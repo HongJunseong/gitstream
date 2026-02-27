@@ -1,0 +1,9 @@
+# ── HTTP ──────────────────────────────────────────────────────────────────── #
+requests==2.32.3
+
+# ── Kafka ─────────────────────────────────────────────────────────────────── #
+# confluent-kafka bundles librdkafka; no separate C library install needed.
+confluent-kafka==2.4.0
+
+# ── Environment ───────────────────────────────────────────────────────────── #
+python-dotenv==1.0.1

@@ -1,0 +1,25 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+
+# State
+poller_state.json
+/tmp/
+
+# IDE
+.vscode/
+.idea/
+
+# Airflow
+airflow.cfg
+airflow.db
+logs/
