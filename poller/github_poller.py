@@ -41,6 +41,10 @@ GITHUB_TOKEN: str          = os.getenv("GITHUB_TOKEN", "")
 GITHUB_API_BASE: str       = "https://api.github.com"
 KAFKA_BOOTSTRAP_SERVERS    = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 KAFKA_TOPIC: str           = os.getenv("KAFKA_TOPIC", "github.raw.events")
+KAFKA_SASL_USERNAME: str   = os.getenv("KAFKA_SASL_USERNAME", "")   # Upstash username
+KAFKA_SASL_PASSWORD: str   = os.getenv("KAFKA_SASL_PASSWORD", "")   # Upstash password
+KAFKA_SECURITY_PROTOCOL    = os.getenv("KAFKA_SECURITY_PROTOCOL", "SASL_SSL")
+KAFKA_SASL_MECHANISM       = os.getenv("KAFKA_SASL_MECHANISM", "SCRAM-SHA-256")
 POLL_INTERVAL: int         = int(os.getenv("POLL_INTERVAL", "60"))
 MAX_RETRIES: int           = int(os.getenv("MAX_RETRIES", "5"))
 MAX_PAGES: int             = int(os.getenv("MAX_PAGES", "3"))   # 3 × 100 = 300 events max
@@ -213,16 +217,26 @@ class GithubPoller:
 
     @staticmethod
     def _build_producer() -> Producer:
-        return Producer(
-            {
-                "bootstrap.servers":        KAFKA_BOOTSTRAP_SERVERS,
-                "acks":                     "all",
-                "enable.idempotence":       True,   # exactly-once semantics
-                "retries":                  5,
-                "linger.ms":               200,
-                "compression.type":        "gzip",
-            }
-        )
+        conf: dict = {
+            "bootstrap.servers":  KAFKA_BOOTSTRAP_SERVERS,
+            "acks":               "all",
+            "enable.idempotence": True,
+            "retries":            5,
+            "linger.ms":         200,
+            "compression.type":  "gzip",
+        }
+        # Upstash SASL 인증 — USERNAME 이 설정된 경우에만 활성화
+        # Upstash: SASL_SSL + SCRAM-SHA-256
+        if KAFKA_SASL_USERNAME and KAFKA_SASL_PASSWORD:
+            conf.update(
+                {
+                    "security.protocol": KAFKA_SECURITY_PROTOCOL,
+                    "sasl.mechanisms":   KAFKA_SASL_MECHANISM,
+                    "sasl.username":     KAFKA_SASL_USERNAME,
+                    "sasl.password":     KAFKA_SASL_PASSWORD,
+                }
+            )
+        return Producer(conf)
 
     @staticmethod
     def _build_session() -> requests.Session:

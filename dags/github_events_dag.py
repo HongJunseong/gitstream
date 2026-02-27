@@ -33,10 +33,23 @@ def _check_kafka_topic(**context) -> None:
     """Assert the raw-events topic exists and push its partition count to XCom."""
     from confluent_kafka.admin import AdminClient
 
-    bootstrap = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+    bootstrap = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "")
     topic     = os.getenv("KAFKA_TOPIC", "github.raw.events")
+    username  = os.getenv("KAFKA_SASL_USERNAME", "")
+    password  = os.getenv("KAFKA_SASL_PASSWORD", "")
+    protocol  = os.getenv("KAFKA_SECURITY_PROTOCOL", "SASL_SSL")
+    mechanism = os.getenv("KAFKA_SASL_MECHANISM", "SCRAM-SHA-256")
 
-    admin  = AdminClient({"bootstrap.servers": bootstrap})
+    conf = {"bootstrap.servers": bootstrap}
+    if username and password:
+        conf.update({
+            "security.protocol": protocol,
+            "sasl.mechanisms":   mechanism,
+            "sasl.username":     username,
+            "sasl.password":     password,
+        })
+
+    admin  = AdminClient(conf)
     topics = admin.list_topics(timeout=15)
 
     if topic not in topics.topics:
