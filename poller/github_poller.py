@@ -41,8 +41,8 @@ GITHUB_TOKEN: str          = os.getenv("GITHUB_TOKEN", "")
 GITHUB_API_BASE: str       = "https://api.github.com"
 KAFKA_BOOTSTRAP_SERVERS    = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 KAFKA_TOPIC: str           = os.getenv("KAFKA_TOPIC", "github.raw.events")
-KAFKA_SASL_USERNAME: str   = os.getenv("KAFKA_SASL_USERNAME", "")   # Upstash username
-KAFKA_SASL_PASSWORD: str   = os.getenv("KAFKA_SASL_PASSWORD", "")   # Upstash password
+KAFKA_SASL_USERNAME: str   = os.getenv("KAFKA_SASL_USERNAME", "")   # Redpanda username
+KAFKA_SASL_PASSWORD: str   = os.getenv("KAFKA_SASL_PASSWORD", "")   # Redpanda password
 KAFKA_SECURITY_PROTOCOL    = os.getenv("KAFKA_SECURITY_PROTOCOL", "SASL_SSL")
 KAFKA_SASL_MECHANISM       = os.getenv("KAFKA_SASL_MECHANISM", "SCRAM-SHA-256")
 POLL_INTERVAL: int         = int(os.getenv("POLL_INTERVAL", "60"))
@@ -225,8 +225,8 @@ class GithubPoller:
             "linger.ms":         200,
             "compression.type":  "gzip",
         }
-        # Upstash SASL 인증 — USERNAME 이 설정된 경우에만 활성화
-        # Upstash: SASL_SSL + SCRAM-SHA-256
+        # Redpanda SASL 인증 — USERNAME 이 설정된 경우에만 활성화
+        # Redpanda Cloud: SASL_SSL + SCRAM-SHA-256
         if KAFKA_SASL_USERNAME and KAFKA_SASL_PASSWORD:
             conf.update(
                 {

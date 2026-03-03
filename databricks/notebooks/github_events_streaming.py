@@ -32,11 +32,11 @@ from pyspark.sql.types import StringType, StructField, StructType
 # Job 설정에서 base_parameters 로 넘겨주면 아래 widget 이 값을 받는다.
 # 노트북 단독 실행 시에는 기본값이 사용된다.
 
-dbutils.widgets.text("kafka_bootstrap_servers", "your-cluster.upstash.io:9092")
+dbutils.widgets.text("kafka_bootstrap_servers", "seed-xxxx.any.us-east-1.mpx.prd.cloud.redpanda.com:9092")
 dbutils.widgets.text("kafka_topic",             "github.raw.events")
 dbutils.widgets.text("kafka_starting_offsets",  "latest")
-dbutils.widgets.text("kafka_sasl_username",     "")   # Upstash username
-dbutils.widgets.text("kafka_sasl_password",     "")   # Upstash password
+dbutils.widgets.text("kafka_sasl_username",     "")   # Redpanda username
+dbutils.widgets.text("kafka_sasl_password",     "")   # Redpanda password
 dbutils.widgets.text("checkpoint_base",         "dbfs:/checkpoints/github-events")
 dbutils.widgets.text("delta_base",              "dbfs:/delta/github-events")
 
@@ -94,13 +94,13 @@ _kafka_opts = {
     "maxOffsetsPerTrigger":     "50000",
     "failOnDataLoss":           "false",
 }
-# Upstash SASL 인증 — SCRAM-SHA-256 (username 이 있을 때만 활성화)
+# Redpanda Cloud SASL 인증 — SCRAM-SHA-256 (username 이 있을 때만 활성화)
 if KAFKA_SASL_USER:
     _kafka_opts.update({
         "kafka.security.protocol": "SASL_SSL",
         "kafka.sasl.mechanism":    "SCRAM-SHA-256",
         "kafka.sasl.jaas.config": (
-            "org.apache.kafka.common.security.scram.ScramLoginModule required "
+            "kafkashaded.org.apache.kafka.common.security.scram.ScramLoginModule required "
             f'username="{KAFKA_SASL_USER}" password="{KAFKA_SASL_PASS}";'
         ),
     })
@@ -164,8 +164,10 @@ events_validated = (
 # ════════════════════════════════════════════════════════════════════════════════
 # STEP 4 — events_v1 Delta 테이블로 쓰기
 #
-# trigger(processingTime) : 마이크로배치 간격. 낮출수록 지연 감소, 비용 증가.
-# checkpointLocation      : Kafka offset + 스트리밍 상태 저장 (재시작 시 이어서 처리)
+# trigger(availableNow) : Serverless 클러스터 전용. 현재 Kafka에 쌓인 데이터를
+#                         모두 처리하고 완료. Job(Continuous)이 즉시 재시작해
+#                         processingTime 과 유사한 near-realtime 동작을 만든다.
+# checkpointLocation    : Kafka offset + 스트리밍 상태 저장 (재시작 시 이어서 처리)
 # ════════════════════════════════════════════════════════════════════════════════
 
 query_events_v1 = (
@@ -173,7 +175,7 @@ query_events_v1 = (
     .writeStream
     .format("delta")
     .outputMode("append")
-    .trigger(processingTime="30 seconds")
+    .trigger(availableNow=True)
     .option("checkpointLocation", CKPT_EVENTS_V1)
     .option("mergeSchema", "true")          # 스키마 진화 허용
     .start(PATH_EVENTS_V1)
@@ -215,7 +217,7 @@ query_repo_activity = (
     .writeStream
     .format("delta")
     .outputMode("append")
-    .trigger(processingTime="30 seconds")
+    .trigger(availableNow=True)
     .option("checkpointLocation", CKPT_REPO_ACTIVITY)
     .start(PATH_REPO_ACTIVITY)
 )

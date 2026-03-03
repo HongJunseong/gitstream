@@ -23,3 +23,6 @@ poller_state.json
 airflow.cfg
 airflow.db
 logs/
+
+# Databricks
+databricks/job_settings.yml

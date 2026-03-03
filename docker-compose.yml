@@ -1,11 +1,13 @@
 version: "3.9"
 
 # ── Shared Airflow config ──────────────────────────────────────────────────── #
-# Kafka는 Upstash(외부 클라우드)를 사용하므로 로컬 브로커 서비스가 없다.
+# Kafka는 Redpanda Cloud(외부)를 사용하므로 로컬 브로커 서비스가 없다.
 # 연결 정보는 모두 .env 에서 주입된다.
 x-airflow-common:
   &airflow-common
-  image: apache/airflow:2.9.3-python3.11
+  build:
+    context:    .
+    dockerfile: airflow/Dockerfile
   env_file: .env
   environment:
     &airflow-env
@@ -26,7 +28,7 @@ x-airflow-common:
 services:
 
   # ── GitHub Poller ──────────────────────────────────────────────────────────── #
-  # Upstash Kafka 로 직접 produce 한다. 연결 정보는 .env 에서 주입.
+  # Redpanda Cloud 로 직접 produce 한다. 연결 정보는 .env 에서 주입.
   poller:
     build:
       context:    .

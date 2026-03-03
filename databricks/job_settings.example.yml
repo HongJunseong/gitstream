@@ -1,0 +1,33 @@
+# Databricks Asset Bundle Job 설정 템플릿.
+# 이 파일을 job_settings.yml 로 복사한 뒤 <...> 부분을 채워 사용하세요.
+# job_settings.yml 은 .gitignore 에 등록되어 있어 커밋되지 않습니다.
+#
+# 배포 방법:
+#   databricks bundle deploy   (Databricks CLI v2 설치 필요)
+# 또는 Databricks UI → Workflows → Edit as YAML 에 붙여넣기.
+
+resources:
+  jobs:
+    github-events-streaming:
+      name: github-events-streaming
+
+      tasks:
+        - task_key: streaming
+          notebook_task:
+            notebook_path: /Workspace/Users/<your-email>/gitstream/github_events_streaming
+            base_parameters:
+              kafka_bootstrap_servers: <redpanda-bootstrap-server>:9092
+              kafka_topic: github.raw.events
+              kafka_starting_offsets: earliest
+              kafka_sasl_username: <redpanda-username>
+              kafka_sasl_password: <redpanda-password>
+              checkpoint_base: /Volumes/<catalog>/<schema>/github_events/checkpoints
+              delta_base: /Volumes/<catalog>/<schema>/github_events/delta
+
+      continuous:
+        pause_status: UNPAUSED
+
+      max_concurrent_runs: 1
+
+      email_notifications:
+        on_failure: []
