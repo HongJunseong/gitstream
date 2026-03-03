@@ -30,3 +30,7 @@ databricks/job_settings.yml
 # Images
 *.png
 *.jpg
+
+# logs
+*.log
+*.logs
