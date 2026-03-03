@@ -59,7 +59,7 @@ GitHub API
 | Stream Processing | Apache Spark Structured Streaming (Databricks Serverless) |
 | Storage | Delta Lake on Unity Catalog Volumes |
 | Orchestration & Monitoring | Apache Airflow 2.9 (Docker Compose) |
-| Visualization | Databricks AI/BI Dashboard (Lakeview) |
+| Visualization | Databricks Dashboard (Lakeview) |
 | CI | GitHub Actions (ruff + pytest) |
 | Container | Docker, Docker Compose |
 
@@ -124,18 +124,7 @@ Databricks bundles a shaded version of the Kafka client. Using the standard clas
 "kafkashaded.org.apache.kafka.common.security.scram.ScramLoginModule required ..."
 ```
 
-### 3. DBFS root disabled — Unity Catalog migration
-Databricks has deprecated and disabled the public DBFS root (`dbfs:/`) in newer workspaces.
-
-```python
-# ❌ DBFS_DISABLED error
-checkpoint_base = "dbfs:/checkpoints/github-events"
-
-# ✅ Unity Catalog Volumes
-checkpoint_base = "/Volumes/workspace/default/github_events/checkpoints"
-```
-
-### 4. ETag-based deduplication
+### 3. ETag-based deduplication
 GitHub's API supports conditional requests via `If-None-Match`. When no new events exist, the server returns `304 Not Modified` — saving both API quota and parse overhead. Combined with `last_event_id` tracking, duplicate events across paginated responses are eliminated.
 
 ```python
@@ -143,7 +132,7 @@ if page == 1 and self.state.etag:
     headers["If-None-Match"] = self.state.etag   # → 304 if unchanged
 ```
 
-### 5. Watermark + append-mode window aggregation
+### 4. Watermark + append-mode window aggregation
 Using `outputMode("append")` with a watermark ensures only fully-closed windows are written to Delta, avoiding repeated updates and making downstream reads stable.
 
 ```python
