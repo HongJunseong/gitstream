@@ -48,6 +48,9 @@ GitHub API
 └─────────────────┘     └──────────────────┘
 ```
 
+## Dashboard
+![alt text](image.png)
+
 ---
 
 ## Tech Stack
