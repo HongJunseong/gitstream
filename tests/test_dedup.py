@@ -1,4 +1,3 @@
-import pytest
 from poller.utils.dedup import EventState
 
 
