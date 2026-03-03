@@ -11,6 +11,13 @@ Real-time GitHub public events pipeline — from API polling to Delta Lake, with
 
 ---
 
+## Motivation
+Built to explore end-to-end streaming architecture using modern data engineering tools —
+specifically how Kafka, Spark Structured Streaming, and Delta Lake work together
+in a production-like environment.
+
+---
+
 ## Overview
 
 GitStream continuously polls the [GitHub Public Events API](https://docs.github.com/en/rest/activity/events), streams events through Redpanda (Kafka-compatible), processes them with Spark Structured Streaming on Databricks Serverless, and stores the results in Delta Lake tables for real-time analytics.
