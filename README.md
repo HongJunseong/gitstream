@@ -47,9 +47,12 @@ GitHub API
 │  4 live charts  │     │  health monitor  │
 └─────────────────┘     └──────────────────┘
 ```
+---
 
 ## Dashboard
-![alt text](image.png)
+(Example) Real-time GitHub event activity monitored across 4 panels, refreshed every 10 minutes.
+
+<img width="1616" height="783" alt="Databricks Dashboard" src="https://github.com/user-attachments/assets/1623abc8-1707-470c-8aae-d07ec08ee340" />
 
 ---
 
