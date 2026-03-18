@@ -250,12 +250,27 @@ The `github_events_pipeline` DAG runs every 10 minutes and checks:
 
 ---
 
-## CI
+## CI/CD
 
 GitHub Actions runs on every push and pull request to `main`:
 
+### CI
 ```
 lint-and-test
 ├── ruff check .       (code quality)
 └── pytest tests/ -v   (11 unit tests)
+```
+
+### CD
+Triggered automatically when CI passes on `main`:
+
+```
+build-and-push
+└── Build Docker image → push to GitHub Container Registry (GHCR)
+
+deploy-ec2
+└── SSH into EC2 → docker compose pull poller → docker compose up -d poller
+
+deploy-databricks
+└── databricks bundle deploy → update Databricks streaming job settings
 ```
