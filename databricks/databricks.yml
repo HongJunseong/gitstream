@@ -38,3 +38,5 @@ variables:
 targets:
   prod:
     mode: production
+    workspace:
+      root_path: /Workspace/Users/wnstjd4504@gmail.com/.bundle/${bundle.name}/${bundle.target}
