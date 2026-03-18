@@ -1,0 +1,11 @@
+bundle:
+  name: gitstream
+
+include:
+  - job_settings.yml
+
+targets:
+  prod:
+    mode: production
+    workspace:
+      host: ${var.databricks_host}
