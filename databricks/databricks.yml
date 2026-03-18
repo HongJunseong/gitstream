@@ -20,7 +20,7 @@ resources:
               delta_base: /Volumes/workspace/default/github_events/delta
 
       continuous:
-        pause_status: UNPAUSED
+        pause_status: PAUSED # UNPAUSED
 
       max_concurrent_runs: 1
 
