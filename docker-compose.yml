@@ -30,9 +30,7 @@ services:
   # ── GitHub Poller ──────────────────────────────────────────────────────────── #
   # Redpanda Cloud 로 직접 produce 한다. 연결 정보는 .env 에서 주입.
   poller:
-    build:
-      context:    .
-      dockerfile: poller/Dockerfile
+    image: ghcr.io/wnstjd4504/gitstream/poller:latest
     env_file: .env
     restart: unless-stopped
     volumes:
