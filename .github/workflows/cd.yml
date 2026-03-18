@@ -65,6 +65,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
+          use_insecure_cipher: true
           script: |
             cd ~/projects/gitstream
             docker compose pull poller
