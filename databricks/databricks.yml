@@ -1,11 +1,40 @@
 bundle:
   name: gitstream
 
-include:
-  - job_settings.yml
+resources:
+  jobs:
+    github-events-streaming:
+      name: github-events-streaming
+
+      tasks:
+        - task_key: streaming
+          notebook_task:
+            notebook_path: /Workspace/Users/wnstjd4504@gmail.com/gitstream/github_events_streaming
+            base_parameters:
+              kafka_bootstrap_servers: ${var.kafka_bootstrap_servers}
+              kafka_topic: github.raw.events
+              kafka_starting_offsets: earliest
+              kafka_sasl_username: ${var.kafka_sasl_username}
+              kafka_sasl_password: ${var.kafka_sasl_password}
+              checkpoint_base: /Volumes/workspace/default/github_events/checkpoints
+              delta_base: /Volumes/workspace/default/github_events/delta
+
+      continuous:
+        pause_status: UNPAUSED
+
+      max_concurrent_runs: 1
+
+      email_notifications:
+        on_failure: []
+
+variables:
+  kafka_bootstrap_servers:
+    description: Redpanda bootstrap servers
+  kafka_sasl_username:
+    description: Kafka SASL username
+  kafka_sasl_password:
+    description: Kafka SASL password
 
 targets:
   prod:
     mode: production
-    workspace:
-      host: ${var.databricks_host}

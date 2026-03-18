@@ -49,7 +49,11 @@ jobs:
         uses: databricks/setup-cli@main
 
       - name: Deploy Databricks bundle
-        run: databricks bundle deploy -t prod
+        run: |
+          databricks bundle deploy -t prod \
+            --var="kafka_bootstrap_servers=${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}" \
+            --var="kafka_sasl_username=${{ secrets.KAFKA_SASL_USERNAME }}" \
+            --var="kafka_sasl_password=${{ secrets.KAFKA_SASL_PASSWORD }}"
         working-directory: databricks
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
