@@ -73,7 +73,7 @@ GitHub API
 | Storage | Delta Lake on Unity Catalog Volumes |
 | Orchestration & Monitoring | Apache Airflow 2.9 (Docker Compose) |
 | Visualization | Databricks Dashboard (Lakeview) |
-| CI | GitHub Actions (ruff + pytest) |
+| CI/CD | GitHub Actions (ruff + pytest / Docker build + EC2 & Databricks deploy) |
 | Container | Docker, Docker Compose |
 
 ---
